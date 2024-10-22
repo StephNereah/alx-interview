@@ -28,11 +28,12 @@ def canUnlockAll(lockboxes):
     for box_id in range(1, len(lockboxes) - 1):
         is_unlocked = False
 
-        # Check if the current box (box_id) can be unlocked by any of the previous boxes.
+        # Check if the current box (box_id) can be unlocked
         for i in range(len(lockboxes)):
-            # Check if the box_id is in the list of keys of the current box (i),
+            # Check if the box_id is in the list of keys of the current box (i)
             # and make sure it's not the same box (i != box_id).
-            if box_id in lockboxes[i] and i != box_id:
+            if (box_id in lockboxes[i] and
+                    i != box_id):
                 is_unlocked = True
                 break
 
