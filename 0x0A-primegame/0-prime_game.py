@@ -1,90 +1,79 @@
 #!/usr/bin/python3
-"""
-Prime game
-"""
-
-
-def is_prime(n):
-    """
-    Checks if number is a prime
-
-    Args:
-        n (int): Number
-
-    Return:
-        True if n is a prime, else False
-    """
-    if n < 2:
-        return False
-
-    for i in range(2, int(n ** 0.5) + 1):
-        if n % i == 0:
-            return False
-    return True
-
-
-def prime_numbers(start, end):
-    """
-    Returns a list of prime numbers from start to end (inclusive)
-
-    Args:
-        start (int): Start number
-        end (int): Last number to include
-    """
-    primes = [n for n in range(start, end + 1) if is_prime(n)]
-    return primes
+"""Module for Prime Game"""
 
 
 def isWinner(x, nums):
     """
-    Determines the winner of a prime numbers game
+    Determines the winner of a set of prime number removal games.
 
     Args:
-        x (int): The number of rounds
-        nums (list): An array
+        x (int): The number of rounds.
+        nums (list of int): A list of integers where each integer n denotes
+        a set of consecutive integers starting from 1 up to and including n.
 
-    Return:
-        name of player who won the most rounds
-        None, if the winner cannot be determined
+    Returns:
+        str: The name of the player who won the most rounds (either "Ben"
+        or "Maria").
+        None: If the winner cannot be determined.
+
+    Raises:
+        None.
     """
+    # Check for invalid input
+    if x <= 0 or nums is None:
+        return None
+    if x != len(nums):
+        return None
+    # Initialize scores and array of possible prime numbers
+    ben = 0
+    maria = 0
+    # Create a list 'a' of length sorted(nums)[-1] + 1 with all elements
+    # initialized to 1
+    a = [1 for x in range(sorted(nums)[-1] + 1)]
+    # The first two elements of the list, a[0] and a[1], are set to 0
+    # because 0 and 1 are not prime numbers
+    a[0], a[1] = 0, 0
+    # Use Sieve of Eratosthenes algorithm to generate array of prime numbers
+    for i in range(2, len(a)):
+        rm_multiples(a, i)
+    # Play each round of the game
+    for i in nums:
+        # If the sum of prime numbers in the set is even, Ben wins
+        if sum(a[0:i + 1]) % 2 == 0:
+            ben += 1
+        else:
+            maria += 1
+    # Determine the winner of the game
+    if ben > maria:
+        return "Ben"
+    if maria > ben:
+        return "Maria"
+    return None
 
-    winner = None
 
-    if not nums or x < 1:
-        return winner
+def rm_multiples(ls, x):
+    """
+    Removes multiples of a prime number from an array of possible prime
+    numbers.
 
-    mariaCount = 0
-    benCount = 0
+    Args:
+        ls (list of int): An array of possible prime numbers.
+        x (int): The prime number to remove multiples of.
 
-    for num in nums:
-        rounds = list(range(1, num + 1))
-        primes = prime_numbers(1, num)
+    Returns:
+        None.
 
-        if not primes:
-            benCount += 1
-            continue
-
-        maria_turn = True
-
-        while (True):
-            if not primes:
-                if maria_turn:
-                    benCount += 1
-                else:
-                    mariaCount += 1
-                break
-
-            leastPrime = primes.pop(0)
-            rounds.remove(leastPrime)
-
-            rounds = [x for x in rounds if x % leastPrime != 0]
-
-            maria_turn = not maria_turn
-
-    if mariaCount > benCount:
-        winner = "Maria"
-
-    if benCount > mariaCount:
-        winner = "Ben"
-
-    return winner
+    Raises:
+        None.
+    """
+    # This loop iterates over multiples of a prime number and marks them as
+    # non-prime by setting their corresponding value to 0 in the input
+    # list ls. Starting from 2, it sets every multiple of x up to the
+    # length of ls to 0. If the index i * x is out of range for the list ls,
+    # the try block will raise an IndexError exception, and the loop will
+    # terminate using the break statement.
+    for i in range(2, len(ls)):
+        try:
+            ls[i * x] = 0
+        except (ValueError, IndexError):
+            break
